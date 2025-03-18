@@ -67,8 +67,15 @@ async def fetch_avatar(url: str):
 async def flag():
     return {"flag": "D4rk{shadow_vault_master}"}
 
+import os
 import uvicorn
+from fastapi import FastAPI
+
+app = FastAPI()
+
+# Get Railway's dynamically assigned port (default to 8000 if not set)
+PORT = int(os.getenv("PORT", 8000))
 
 if __name__ == "__main__":
-    port = int(os.getenv("PORT", 8000))  # Default to 8000 if PORT is not set
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
+
