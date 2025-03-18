@@ -1,25 +1,23 @@
 import os
 import psycopg2
 import uvicorn
-from fastapi import FastAPI, Request, Form, HTTPException
+from fastapi import FastAPI, HTTPException, Form
 from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
-# Fetch the DATABASE_URL from Railway environment variables
+# Ensure DATABASE_URL is set
 DATABASE_URL = os.getenv("DATABASE_URL")
-
 if not DATABASE_URL:
-    raise Exception("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
+    raise Exception("❌ DATABASE_URL is missing! Set it in Railway.")
 
 def get_db_connection():
     try:
-        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print to confirm connection
+        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print
         return psycopg2.connect(DATABASE_URL)
     except Exception as e:
         raise Exception(f"❌ Database connection failed: {e}")
 
-# Initialize Database
 def init_db():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -46,8 +44,7 @@ async def home():
 async def login(username: str = Form(...), password: str = Form(...)):
     conn = get_db_connection()
     cursor = conn.cursor()
-    query = "SELECT role FROM users WHERE username = %s AND password = %s"
-    cursor.execute(query, (username, password))
+    cursor.execute("SELECT role FROM users WHERE username = %s AND password = %s", (username, password))
     result = cursor.fetchone()
     conn.close()
 
@@ -62,12 +59,6 @@ async def login(username: str = Form(...), password: str = Form(...)):
 @app.get("/admin")
 async def admin_panel():
     return {"message": "Welcome to the Shadow Vault Admin Panel. But where's the flag?"}
-
-@app.get("/api/avatar")
-async def fetch_avatar(url: str):
-    if not url.startswith("http"):
-        raise HTTPException(status_code=400, detail="Invalid URL format")
-    return {"avatar": f"Fetching {url}"}
 
 @app.get("/flag")
 async def flag():
