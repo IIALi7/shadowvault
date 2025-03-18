@@ -5,6 +5,10 @@ from fastapi import FastAPI, HTTPException, Form
 from starlette.responses import RedirectResponse
 
 app = FastAPI()
+import os
+
+print("🔹 Checking environment variables...")
+print(f"🔹 DATABASE_URL = {os.environ.get('DATABASE_URL', '❌ NOT FOUND')}")
 
 # Get DATABASE_URL correctly
 DATABASE_URL = os.getenv("DATABASE_URL")
