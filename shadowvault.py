@@ -1,15 +1,23 @@
 import os
 import psycopg2
+import uvicorn
 from fastapi import FastAPI, Request, Form, HTTPException
 from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
-# Database Connection
+# Fetch the DATABASE_URL from Railway environment variables
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise Exception("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
+
 def get_db_connection():
-    return psycopg2.connect(DATABASE_URL)
+    try:
+        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print to confirm connection
+        return psycopg2.connect(DATABASE_URL)
+    except Exception as e:
+        raise Exception(f"❌ Database connection failed: {e}")
 
 # Initialize Database
 def init_db():
@@ -38,9 +46,8 @@ async def home():
 async def login(username: str = Form(...), password: str = Form(...)):
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    query = f"SELECT role FROM users WHERE username = '{username}' AND password = '{password}'"
-    cursor.execute(query)
+    query = "SELECT role FROM users WHERE username = %s AND password = %s"
+    cursor.execute(query, (username, password))
     result = cursor.fetchone()
     conn.close()
 
@@ -51,7 +58,6 @@ async def login(username: str = Form(...), password: str = Form(...)):
         return {"message": "Login successful. But you are not an admin!"}
     else:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-
 
 @app.get("/admin")
 async def admin_panel():
@@ -65,31 +71,8 @@ async def fetch_avatar(url: str):
 
 @app.get("/flag")
 async def flag():
-    return {"flag": "D4rk{shadow_vault_master}"}
-
-import os
-import uvicorn
-from fastapi import FastAPI
-
-app = FastAPI()
-
-# Get Railway's dynamically assigned port (default to 8000 if not set)
-PORT = int(os.getenv("PORT", 8000))
+    return {"flag": "FLAG{shadow_vault_master}"}
 
 if __name__ == "__main__":
+    PORT = int(os.getenv("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=PORT)
-import os
-import psycopg2
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-if not DATABASE_URL:
-    raise Exception("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
-
-def get_db_connection():
-    try:
-        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print
-        return psycopg2.connect(DATABASE_URL)
-    except Exception as e:
-        raise Exception(f"❌ Database connection failed: {e}")
-
