@@ -78,4 +78,18 @@ PORT = int(os.getenv("PORT", 8000))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=PORT)
+import os
+import psycopg2
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise Exception("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
+
+def get_db_connection():
+    try:
+        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print
+        return psycopg2.connect(DATABASE_URL)
+    except Exception as e:
+        raise Exception(f"❌ Database connection failed: {e}")
 
