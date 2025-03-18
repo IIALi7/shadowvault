@@ -65,4 +65,10 @@ async def fetch_avatar(url: str):
 
 @app.get("/flag")
 async def flag():
-    return {"flag": "FLAG{shadow_vault_master}"}
+    return {"flag": "D4rk{shadow_vault_master}"}
+
+import uvicorn
+
+if __name__ == "__main__":
+    port = int(os.getenv("PORT", 8000))  # Default to 8000 if PORT is not set
+    uvicorn.run(app, host="0.0.0.0", port=port)
