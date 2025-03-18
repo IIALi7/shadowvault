@@ -1,37 +1,27 @@
 import os
 import psycopg2
-import time
 import uvicorn
 from fastapi import FastAPI, HTTPException, Form
 from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
-# Ensure DATABASE_URL is set
+# Get DATABASE_URL correctly
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     print("❌ DATABASE_URL is missing! Set it in Railway.")
     raise Exception("❌ DATABASE_URL is missing! Set it in Railway.")
 
-print(f"🔹 DATABASE_URL found: {DATABASE_URL}")
+print(f"🔹 DATABASE_URL detected: {DATABASE_URL}")
 
 def get_db_connection():
-    """ Attempt to connect to the database with retries to avoid looping errors. """
-    retries = 5
-    for i in range(retries):
-        try:
-            print(f"🔹 Attempt {i+1} to connect to the database...")
-            conn = psycopg2.connect(DATABASE_URL)
-            print("✅ Database connection successful!")
-            return conn
-        except Exception as e:
-            print(f"❌ Database connection failed: {e}")
-            if i < retries - 1:
-                print("🔄 Retrying in 5 seconds...")
-                time.sleep(5)
-            else:
-                raise Exception("❌ Failed to connect to the database after multiple attempts.")
+    try:
+        print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print
+        return psycopg2.connect(DATABASE_URL)
+    except Exception as e:
+        print(f"❌ Database connection failed: {e}")
+        raise Exception(f"❌ Database connection failed: {e}")
 
 def init_db():
     conn = get_db_connection()
