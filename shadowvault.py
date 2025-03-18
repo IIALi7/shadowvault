@@ -6,16 +6,21 @@ from starlette.responses import RedirectResponse
 
 app = FastAPI()
 
-# Ensure DATABASE_URL is set
+# Debugging: Print `DATABASE_URL`
 DATABASE_URL = os.getenv("DATABASE_URL")
+
 if not DATABASE_URL:
-    raise Exception("❌ DATABASE_URL is missing! Set it in Railway.")
+    print("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
+    raise Exception("❌ DATABASE_URL is missing! Make sure it's set in Railway.")
+
+print(f"🔹 DATABASE_URL found: {DATABASE_URL}")
 
 def get_db_connection():
     try:
         print(f"🔹 Connecting to: {DATABASE_URL}")  # Debug print
         return psycopg2.connect(DATABASE_URL)
     except Exception as e:
+        print(f"❌ Database connection failed: {e}")
         raise Exception(f"❌ Database connection failed: {e}")
 
 def init_db():
@@ -66,4 +71,5 @@ async def flag():
 
 if __name__ == "__main__":
     PORT = int(os.getenv("PORT", 8000))
+    print(f"🔹 Starting FastAPI on port {PORT}")
     uvicorn.run(app, host="0.0.0.0", port=PORT)
