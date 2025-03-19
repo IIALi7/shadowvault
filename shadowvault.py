@@ -81,3 +81,4 @@ import os
 
 print("🔹 Checking environment variables...")
 print(f"🔹 DATABASE_URL = {os.environ.get('DATABASE_URL', '❌ NOT FOUND')}")
+print("🚀 Redeploying with a new database connection...")
