@@ -77,3 +77,7 @@ if __name__ == "__main__":
     PORT = int(os.getenv("PORT", 8000))
     print(f"🔹 Starting FastAPI on port {PORT}")
     uvicorn.run(app, host="0.0.0.0", port=PORT)
+import os
+
+print("🔹 Checking environment variables...")
+print(f"🔹 DATABASE_URL = {os.environ.get('DATABASE_URL', '❌ NOT FOUND')}")
